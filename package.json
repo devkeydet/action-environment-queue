@@ -1,0 +1,25 @@
+{
+  "name": "action-environment-queue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "ncc build src/index.js --license licenses.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devkeydet/action-environment-queue.git"
+  },
+  "keywords": [],
+  "author": "devkeydet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devkeydet/action-environment-queue/issues"
+  },
+  "homepage": "https://github.com/devkeydet/action-environment-queue#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0"
+  }
+}

@@ -1,0 +1,25 @@
+name: 'Environment Queue'
+description: 'If another workflow is already running targeting the same GitHub Environment, wait for it to finish.'
+inputs:
+  environment:
+    description: The GitHub Environment name to base the queue on
+    required: true
+
+  github-token:
+    description: The GitHub token to use
+    default: ${{ github.token }}
+    required: true
+
+  timeout:
+    description: Timeout before we stop trying (in milliseconds)
+    default: '600000'
+    required: true
+
+  delay:
+    description: Delay between status checks (in milliseconds)
+    default: '10000'
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
