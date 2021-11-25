@@ -1,5 +1,10 @@
 name: 'Environment Queue'
 description: 'If another workflow is already running targeting the same GitHub Environment, wait for it to finish.'
+
+branding:
+  color: yellow
+  icon: clock
+
 inputs:
   environment:
     description: The GitHub Environment name to base the queue on
