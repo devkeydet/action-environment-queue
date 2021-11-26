@@ -4,7 +4,7 @@ name: pr-completed
 on:
   workflow_run:
     workflows: 
-    - "pr"
+    - pr
     types: 
     - completed
 jobs:

@@ -13,11 +13,11 @@ jobs:
   build-and-test:
     needs: sleep
     environment: foo
-    # runs-on: ${{ matrix.os }}
-    # strategy:
-    #   matrix:
-    #     os: [windows-latest,ubuntu-latest]
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest,ubuntu-latest]
+    # runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       # - name: run-deploy-foo
