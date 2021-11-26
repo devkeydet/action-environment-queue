@@ -13,7 +13,8 @@ jobs:
   build-and-test:
     needs: sleep
     environment: foo
-    # using matrix is failing even though using windows and ubuntu explictly is not
+    # TODO: #5 using matrix is failing even though using windows and ubuntu explictly is not. Need to investigate. For now, just testing with ubuntu-latest.
+    
     # runs-on: ${{ matrix.os }}
     # strategy:
     #   matrix:
@@ -22,13 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: run-deploy-foo
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     gh workflow run deploy-foo --ref ${{ github.event.pull_request.head.ref }}
       - name: test-action
         uses: ./
         with:
           environment: foo
-      # - run: echo 'foo'
