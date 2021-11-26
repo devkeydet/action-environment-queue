@@ -5,17 +5,18 @@ on:
     branches: [main]
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest,ubuntu-latest]
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [windows-latest,ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: run-deploy-foo
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh workflow run deploy-foo --ref ${{ github.event.pull_request.head.ref }}
+    # - name: run-deploy-foo
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |
+    #     gh workflow run deploy-foo --ref ${{ github.event.pull_request.head.ref }}
     - name: test-action
       uses: ./
       with:
