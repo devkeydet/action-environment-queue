@@ -2,6 +2,8 @@
 # This workflow targets environment foo just like pr.yml
 name: pr-completed
 on:
+  push:
+    
   workflow_run:
     workflows: 
     - "pr"
