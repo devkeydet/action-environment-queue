@@ -5,6 +5,7 @@ on:
     branches: [main]
 jobs:
   build-and-test:
+    environment: foo
     # runs-on: ${{ matrix.os }}
     # strategy:
     #   matrix:
@@ -20,4 +21,4 @@ jobs:
     - name: test-action
       uses: ./
       with:
-        environment: 'foo'
+        environment: foo
