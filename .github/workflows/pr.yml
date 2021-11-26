@@ -17,6 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest,ubuntu-latest]
+      fail-fast: false
     # runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
