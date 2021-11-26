@@ -1,0 +1,11 @@
+name: deploy-foo
+on:
+  workflow_dispatch:
+jobs:
+  build-and-test:
+    environment: foo
+    runs-on: ubuntu-latest
+    steps:
+      - name: fake-deploy
+        run: |
+          echo 'fake'

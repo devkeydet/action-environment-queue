@@ -1,0 +1,20 @@
+name: pr-validation
+on:
+  workflow_dispatch: # allow manual triggering
+  pull_request:
+    branches: [main]
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest,ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: run-deploy-foo
+      run: |
+        gh workflow run deploy-foo --ref ${{ github.ref }}
+    - name: test-action
+      uses: ./
+      with:
+        environment: 'foo'
