@@ -1,5 +1,5 @@
 # This workflow always runs so we can test the action in pr.yml
-# This workflow targets environment foo just like pr.yml 
+# This workflow targets environment foo just like pr.yml
 name: deploy-foo-two
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 jobs:
   build-and-test:
     environment: foo
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       # sleep to force this workflow to run longer than pr.yml so the action queues
       - shell: pwsh

@@ -5,7 +5,7 @@ on:
     branches: [main]
 jobs:
   sleep:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       # sleep for 5 seconds to force the second job that targets environmment foo to run shortly after deploy-foo.yml runs
       - shell: pwsh
@@ -19,13 +19,13 @@ jobs:
     #     os: [windows-latest,ubuntu-latest]
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    # - name: run-deploy-foo
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   run: |
-    #     gh workflow run deploy-foo --ref ${{ github.event.pull_request.head.ref }}
-    - name: test-action
-      uses: ./
-      with:
-        environment: foo
+      - uses: actions/checkout@v2
+      # - name: run-deploy-foo
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     gh workflow run deploy-foo --ref ${{ github.event.pull_request.head.ref }}
+      - name: test-action
+        uses: ./
+        with:
+          environment: foo
