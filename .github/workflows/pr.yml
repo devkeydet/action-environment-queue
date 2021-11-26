@@ -6,11 +6,10 @@ on:
 jobs:
   build-and-test:
     environment: foo
-    # runs-on: ${{ matrix.os }}
-    # strategy:
-    #   matrix:
-    #     os: [windows-latest,ubuntu-latest]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest,ubuntu-latest]
     steps:
     - uses: actions/checkout@v2
     # - name: run-deploy-foo
