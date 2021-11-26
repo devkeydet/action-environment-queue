@@ -5,6 +5,8 @@ on:
   workflow_run:
     workflows: 
     - "pr"
+    types: 
+    - completed
 jobs:
   post-pr:
     runs-on: windows-latest
