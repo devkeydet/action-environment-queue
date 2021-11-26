@@ -3,13 +3,13 @@
 name: pr-completed
 on:
   workflow_run:
-    workflows: 
-    - pr
-    types: 
-    - completed
+    workflows:
+      - pr
+    types:
+      - completed
 jobs:
   post-pr:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       # sleep to force this workflow to run longer than pr.yml so the action queues
       - shell: pwsh

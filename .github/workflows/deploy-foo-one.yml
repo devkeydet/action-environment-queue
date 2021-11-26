@@ -7,7 +7,7 @@ on:
 jobs:
   build-and-test:
     environment: foo
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       # sleep to force this workflow to run longer than pr.yml so the action queues
       - shell: pwsh

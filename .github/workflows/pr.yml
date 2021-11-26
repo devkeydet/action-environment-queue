@@ -5,7 +5,7 @@ on:
     branches: [main]
 jobs:
   sleep:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       # sleep for 5 seconds to force the second job that targets environmment foo to run shortly after deploy-foo.yml runs
       - shell: pwsh
@@ -13,12 +13,13 @@ jobs:
   build-and-test:
     needs: sleep
     environment: foo
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest,ubuntu-latest]
-      fail-fast: false
-    # runs-on: windows-latest
+    # using matrix is failing even though using windows and ubuntu explictly is not
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [windows-latest, ubuntu-latest]
+    #   fail-fast: false
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       # - name: run-deploy-foo
