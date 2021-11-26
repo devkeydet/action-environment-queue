@@ -1,6 +1,6 @@
 # This workflow always runs so we can test the action in pr.yml
 # This workflow targets environment foo just like pr.yml 
-name: deploy-foo
+name: deploy-foo-two
 on:
   pull_request:
     branches: [main]
