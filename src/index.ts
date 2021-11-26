@@ -1,14 +1,14 @@
-const core = require('@actions/core')
-const github = require('@actions/github')
-const util = require('util')
-const { getDeploymentsWaitingFor } = require("./getDeploymentsWaitingFor")
+import * as core from '@actions/core'
+import * as github from '@actions/github'
+import { Octokit } from '@octokit/rest'
+import { getDeploymentsWaitingFor } from "./getDeploymentsWaitingFor"
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms: number | undefined) => new Promise(resolve => setTimeout(resolve, ms))
 
 async function run() {
     let timer = 0
 
-    const inputs = {
+    const inputs: Inputs = {
         environment: core.getInput('environment'),
         token: core.getInput('github-token'),
         delay: Number(core.getInput('delay')),
@@ -19,14 +19,13 @@ async function run() {
     const context = github.context
 
     const jobs = await octokit.rest.actions.listJobsForWorkflowRun({
-        ...context.owner,
         ...context.repo,
         run_id: context.runId
     })
 
-    const job = jobs.data.jobs.filter(job => job.name == context.job)[0]
+    const jobId = jobs.data.jobs.filter(job => job.name == context.job)[0].id
 
-    let waitingFor = await getDeploymentsWaitingFor(octokit, context, inputs, job)
+    let waitingFor = await getDeploymentsWaitingFor(octokit as Octokit, context, inputs, jobId)
 
     if (waitingFor.length === 0) {
         core.info(`no other deployments for Environment (${inputs.environment}) found`)
@@ -53,10 +52,10 @@ async function run() {
         await sleep(inputs.delay)
 
         // get the data again
-        waitingFor = await getDeploymentsWaitingFor(octokit, context, inputs, job)
+        waitingFor = await getDeploymentsWaitingFor(octokit as Octokit, context, inputs, jobId)
     }
 
     core.info('all deployments in the queue completed!')
- }
+}
 
 run().catch(e => core.setFailed(e.message))

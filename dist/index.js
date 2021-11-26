@@ -1,6 +1,155 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 746:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getDeploymentsWaitingFor = void 0;
+const core = __importStar(__nccwpck_require__(8125));
+const util = __importStar(__nccwpck_require__(3837));
+function getDeploymentsWaitingFor(octokit, context, inputs, jobId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const deployments = yield octokit.rest.repos.listDeployments(Object.assign(Object.assign({}, context.repo), { environment: inputs.environment }));
+        const allDeploymentStatusesToReview = [];
+        for (const deployment of deployments.data) {
+            const deploymentStatuses = yield octokit.rest.repos.listDeploymentStatuses(Object.assign(Object.assign({}, context.repo), { deployment_id: deployment.id }));
+            if (deploymentStatuses.data.length > 0) {
+                const latestDeplymentStatus = deploymentStatuses.data[0];
+                if (['in_progress', 'queued'].includes(latestDeplymentStatus.state)) {
+                    allDeploymentStatusesToReview.push(latestDeplymentStatus);
+                }
+            }
+        }
+        let waitingFor = [];
+        if (allDeploymentStatusesToReview.length > 0) {
+            const currentDeploymentStatus = allDeploymentStatusesToReview.filter(status => status.log_url.includes(jobId.toString()))[0];
+            waitingFor = allDeploymentStatusesToReview
+                .filter(status => !status.log_url.includes(jobId.toString()))
+                .filter(status => new Date(status.created_at) < new Date(currentDeploymentStatus.created_at));
+        }
+        core.info(`found ${waitingFor.length} statuses to wait for`);
+        core.debug(util.inspect(waitingFor.map(status => ({ id: status.id, name: status.state }))));
+        return waitingFor;
+    });
+}
+exports.getDeploymentsWaitingFor = getDeploymentsWaitingFor;
+
+
+/***/ }),
+
+/***/ 5613:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(8125));
+const github = __importStar(__nccwpck_require__(6232));
+const getDeploymentsWaitingFor_1 = __nccwpck_require__(746);
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let timer = 0;
+        const inputs = {
+            environment: core.getInput('environment'),
+            token: core.getInput('github-token'),
+            delay: Number(core.getInput('delay')),
+            timeout: Number(core.getInput('timeout'))
+        };
+        const octokit = github.getOctokit(inputs.token);
+        const context = github.context;
+        const jobs = yield octokit.rest.actions.listJobsForWorkflowRun(Object.assign(Object.assign({}, context.repo), { run_id: context.runId }));
+        const jobId = jobs.data.jobs.filter(job => job.name == context.job)[0].id;
+        let waitingFor = yield (0, getDeploymentsWaitingFor_1.getDeploymentsWaitingFor)(octokit, context, inputs, jobId);
+        if (waitingFor.length === 0) {
+            core.info(`no other deployments for Environment (${inputs.environment}) found`);
+            process.exit(0);
+        }
+        while (waitingFor.find(status => ['in_progress', 'queued'].includes(status.state))) {
+            timer += inputs.delay;
+            // time out!
+            if (timer >= inputs.timeout) {
+                core.setFailed('environment queue timed out');
+                process.exit(1);
+            }
+            for (const status of waitingFor) {
+                const deploymentUrl = status.deployment_url;
+                const arr = deploymentUrl.split('/');
+                const deploymentId = arr[arr.length - 1];
+                core.info(`waiting for deployment: ${deploymentId}, current state: ${status.state}`);
+            }
+            // zzz
+            yield sleep(inputs.delay);
+            // get the data again
+            waitingFor = yield (0, getDeploymentsWaitingFor_1.getDeploymentsWaitingFor)(octokit, context, inputs, jobId);
+        }
+        core.info('all deployments in the queue completed!');
+    });
+}
+run().catch(e => core.setFailed(e.message));
+
+
+/***/ }),
+
 /***/ 4514:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -8273,59 +8422,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 1549:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "getDeploymentsWaitingFor": () => (/* binding */ getDeploymentsWaitingFor)
-/* harmony export */ });
-const core = __nccwpck_require__(8125)
-const util = __nccwpck_require__(3837)
-
-async function getDeploymentsWaitingFor(octokit, context, inputs, job, before) {
-    const deployments = await octokit.rest.repos.listDeployments({
-        ...context.owner,
-        ...context.repo,
-        environment: inputs.environment
-    })
-
-    const allDeploymentStatusesToReview = []
-
-    for (const deployment of deployments.data) {
-
-        const deploymentStatuses = await octokit.rest.repos.listDeploymentStatuses({
-            ...context.owner,
-            ...context.repo,
-            deployment_id: deployment.id
-        })
-
-        if (deploymentStatuses.data.length > 0) {
-            const latestDeplymentStatus = deploymentStatuses.data[0]
-            if (['in_progress', 'queued'].includes(latestDeplymentStatus.state)) {
-                allDeploymentStatusesToReview.push(latestDeplymentStatus)
-            }
-        }
-    }
-    let waitingFor
-
-    if (allDeploymentStatusesToReview.length > 0) {
-        const currentDeploymentStatus = allDeploymentStatusesToReview.filter(status => status.log_url.includes(job.id))[0]
-        waitingFor = allDeploymentStatusesToReview
-            .filter(status => !status.log_url.includes(job.id))
-            .filter(status => new Date(status.created_at) < new Date(currentDeploymentStatus.created_at))
-    }
-
-    core.info(`found ${waitingFor.length} statuses to wait for`)
-    core.debug(util.inspect(waitingFor.map(status => ({ id: status.id, name: status.state }))))
-    return waitingFor
-}
-
-
-
-/***/ }),
-
 /***/ 3560:
 /***/ ((module) => {
 
@@ -8487,106 +8583,17 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(8125)
-const github = __nccwpck_require__(6232)
-const util = __nccwpck_require__(3837)
-const { getDeploymentsWaitingFor } = __nccwpck_require__(1549)
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-async function run() {
-    let timer = 0
-
-    const inputs = {
-        environment: core.getInput('environment'),
-        token: core.getInput('github-token'),
-        delay: Number(core.getInput('delay')),
-        timeout: Number(core.getInput('timeout'))
-    }
-
-    const octokit = github.getOctokit(inputs.token)
-    const context = github.context
-
-    const jobs = await octokit.rest.actions.listJobsForWorkflowRun({
-        ...context.owner,
-        ...context.repo,
-        run_id: context.runId
-    })
-
-    const job = jobs.data.jobs.filter(job => job.name == context.job)[0]
-
-    let waitingFor = await getDeploymentsWaitingFor(octokit, context, inputs, job)
-
-    if (waitingFor.length === 0) {
-        core.info(`no other deployments for Environment (${inputs.environment}) found`)
-        process.exit(0)
-    }
-
-    while (waitingFor.find(status => ['in_progress', 'queued'].includes(status.state))) {
-        timer += inputs.delay
-
-        // time out!
-        if (timer >= inputs.timeout) {
-            core.setFailed('environment queue timed out')
-            process.exit(1)
-        }
-
-        for (const status of waitingFor) {
-            const deploymentUrl = status.deployment_url
-            const arr = deploymentUrl.split('/')
-            const deploymentId = arr[arr.length - 1]
-            core.info(`waiting for deployment: ${deploymentId}, current state: ${status.state}`)
-        }
-
-        // zzz
-        await sleep(inputs.delay)
-
-        // get the data again
-        waitingFor = await getDeploymentsWaitingFor(octokit, context, inputs, job)
-    }
-
-    core.info('all deployments in the queue completed!')
- }
-
-run().catch(e => core.setFailed(e.message))
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(5613);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
