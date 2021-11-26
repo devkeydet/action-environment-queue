@@ -1,6 +1,7 @@
 name: deploy-foo
 on:
   workflow_dispatch:
+  push:    
 jobs:
   build-and-test:
     environment: foo
