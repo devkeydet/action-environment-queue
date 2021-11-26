@@ -11,6 +11,7 @@ jobs:
       - shell: pwsh
         run: Start-Sleep -s 5
   build-and-test:
+    needs: sleep
     environment: foo
     # runs-on: ${{ matrix.os }}
     # strategy:
