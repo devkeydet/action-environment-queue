@@ -11,4 +11,4 @@ jobs:
     steps:
       # sleep to force this workflow to run longer than pr.yml so the action queues
       - shell: pwsh
-        run: Start-Sleep -s 30
+        run: Start-Sleep -s 45
