@@ -58,7 +58,7 @@ function getDeploymentsWaitingFor(octokit, context, inputs, jobId) {
                 .filter(status => !status.log_url.includes(jobId.toString()))
                 .filter(status => new Date(status.created_at) < new Date(currentDeploymentStatus.created_at));
         }
-        core.info(`found ${waitingFor.length} statuses to wait for`);
+        core.info(`found ${waitingFor.length} deployments to wait for`);
         core.debug(util.inspect(waitingFor.map(status => ({ id: status.id, name: status.state }))));
         return waitingFor;
     });
@@ -205,6 +205,8 @@ function queueWorkflow(inputs) {
     });
 }
 exports.queueWorkflow = queueWorkflow;
+function someName(params) {
+}
 
 
 /***/ }),
