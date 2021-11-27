@@ -70,7 +70,7 @@ test('queueWorkflow: nothing to queue', async () => {
 
     let msg = ''
     jest.spyOn(core, 'info').mockImplementation((messsage: string) => {
-        // eat the cals so they don't show up in the test results on the runner
+        // spy on the calls so they don't show up in the test results on the runner
     })
 
     let mockExit = mockProcess.mockProcessExit()
@@ -127,7 +127,7 @@ test('queueWorkflow: deployments to queue', async () => {
     }
 
     jest.spyOn(core, 'info').mockImplementation(() => {
-        // eat the cals so they don't show up in the test results on the runner
+        // spy on the calls so they don't show up in the test results on the runner
     })
 
     // @ts-ignore
@@ -202,7 +202,7 @@ test('queueWorkflow: timed out', async () => {
     })
     let mockExit = mockProcess.mockProcessExit()
     jest.spyOn(core, 'setFailed').mockImplementation((messsage: any) => {
-        // eat the cals so they don't show up in the test results on the runner
+        // spy on the calls so they don't show up in the test results on the runner
     })
     await queueWorkflow(inputs)
     expect(mockExit).toHaveBeenCalledWith(1)
