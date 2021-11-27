@@ -61,6 +61,6 @@ export async function queueWorkflow(inputs: Inputs) {
     core.info(latestQueueStatus);
 }
 
-function name(params:string) {
+function someName(params:string) {
     
 }
