@@ -2,6 +2,7 @@ import { expect, test, jest } from '@jest/globals'
 import { queueWorkflow } from '../src/queueWorkflow'
 import { getLatestQueueStatus } from '../src/queueWorkflow';
 import { Inputs } from '../src/Inputs'
+import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { Octokit } from '@octokit/rest'
 import { Context } from '@actions/github/lib/context'
@@ -191,6 +192,11 @@ test('queueWorkflow: timed out', async () => {
         }
     })
     let mockExit = mockProcess.mockProcessExit()
+    let msg = ''
+    jest.spyOn(core,'setFailed').mockImplementation((messsage:any)=>{
+        msg = messsage
+    })
     await queueWorkflow(inputs)
+    expect(msg).toContain('timed out')
     expect(mockExit).toHaveBeenCalledWith(1)
 })
