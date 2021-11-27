@@ -5,10 +5,10 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  build-and-test:
+  deploy-foo-two:
     environment: foo
     runs-on: ubuntu-latest
     steps:
       # sleep to force this workflow to run longer than pr.yml so the action queues
       - shell: pwsh
-        run: Start-Sleep -s 60
+        run: Start-Sleep -s 75
