@@ -275,6 +275,9 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# jest code coverage
+coverage/
+
 # Visual Studio 6 build log
 *.plg
 
