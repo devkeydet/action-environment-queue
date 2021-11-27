@@ -69,7 +69,9 @@ test('queueWorkflow: nothing to queue', async () => {
     jest.spyOn(octokit.rest.repos, 'listDeploymentStatuses').mockReturnValue(listDeploymentStatuses)
 
     let msg = ''
-    jest.spyOn(core, 'info').mockImplementation((messsage: string) => {})
+    jest.spyOn(core, 'info').mockImplementation((messsage: string) => {
+        //eat the logs so they don't show up on the runner
+    })
 
     let mockExit = mockProcess.mockProcessExit()
     await queueWorkflow(inputs)
@@ -124,9 +126,8 @@ test('queueWorkflow: deployments to queue', async () => {
     while (!(await getLatestQueueStatus()).includes('waiting')) {
     }
 
-    let msg = ''
-    jest.spyOn(core, 'info').mockImplementation((messsage: string) => {
-        msg = messsage
+    jest.spyOn(core, 'info').mockImplementation(() => {
+        //eat the logs so they don't show up on the runner
     })
 
     // @ts-ignore
@@ -156,7 +157,7 @@ test('queueWorkflow: deployments to queue', async () => {
         }
     })
     while (!(await getLatestQueueStatus()).includes('completed')) {
-    }    
+    }
 })
 
 test('queueWorkflow: timed out', async () => {
@@ -200,7 +201,9 @@ test('queueWorkflow: timed out', async () => {
         }
     })
     let mockExit = mockProcess.mockProcessExit()
-    jest.spyOn(core, 'setFailed').mockImplementation((messsage: any) => {})
+    jest.spyOn(core, 'setFailed').mockImplementation((messsage: any) => {
+        //eat the logs so they don't show up on the runner
+    })
     await queueWorkflow(inputs)
     expect(mockExit).toHaveBeenCalledWith(1)
 })
