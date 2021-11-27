@@ -1,4 +1,4 @@
-interface Inputs {
+export interface Inputs {
     environment: string
     token: string
     delay: number

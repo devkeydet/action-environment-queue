@@ -4,14 +4,16 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  sleep:
+  test-code:
     runs-on: ubuntu-latest
     steps:
-      # sleep for 5 seconds to force the second job that targets environmment foo to run shortly after deploy-foo.yml runs
-      - shell: pwsh
-        run: Start-Sleep -s 5
-  build-and-test:
-    needs: sleep
+      - uses: actions/checkout@v2
+      - run: |
+          npm install
+      - run: |
+          npm run all
+  test-action:
+    needs: test-code
     environment: foo
     # TODO: #5 using matrix is failing even though using windows and ubuntu explictly is not. Need to investigate. For now, just testing with ubuntu-latest.
     
@@ -26,4 +28,5 @@ jobs:
       - name: test-action
         uses: ./
         with:
+          github-token: ${{ secrets.PAT }}
           environment: foo

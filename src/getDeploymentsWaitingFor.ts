@@ -1,9 +1,10 @@
 import * as core from '@actions/core'
 import * as util from 'util'
-import { Octokit } from '@octokit/rest';
-import { Context } from '@actions/github/lib/context';
+import { Octokit } from '@octokit/rest'
+import { Context } from '@actions/github/lib/context'
+import { Inputs } from "./Inputs"
 
-async function getDeploymentsWaitingFor(octokit: Octokit, context: Context, inputs: Inputs, jobId: number): Promise<DeploymentStatus[]> {
+export async function getDeploymentsWaitingFor(octokit: Octokit, context: Context, inputs: Inputs, jobId: number): Promise<DeploymentStatus[]> {
     const deployments = await octokit.rest.repos.listDeployments({
         ...context.repo,
         environment: inputs.environment
@@ -37,7 +38,6 @@ async function getDeploymentsWaitingFor(octokit: Octokit, context: Context, inpu
 
     core.info(`found ${waitingFor.length} statuses to wait for`)
     core.debug(util.inspect(waitingFor.map(status => ({ id: status.id, name: status.state }))))
+    
     return waitingFor
 }
-
-export { getDeploymentsWaitingFor }
