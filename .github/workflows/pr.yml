@@ -28,4 +28,5 @@ jobs:
       - name: test-action
         uses: ./
         with:
+          github-token: ${{ secrets.PAT }}
           environment: foo
