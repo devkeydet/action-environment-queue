@@ -41,7 +41,7 @@ const listJobsForWorkflowRun: any = {
 
 jest.spyOn(octokit.actions, 'listJobsForWorkflowRun').mockReturnValue(listJobsForWorkflowRun)
 
-beforeEach(()=>{
+beforeEach(() => {
     jest.useFakeTimers()
 })
 
@@ -67,6 +67,9 @@ test('queueWorkflow: nothing to queue', async () => {
     }
 
     jest.spyOn(octokit.rest.repos, 'listDeploymentStatuses').mockReturnValue(listDeploymentStatuses)
+
+    let msg = ''
+    jest.spyOn(core, 'info').mockImplementation((messsage: string) => {})
 
     let mockExit = mockProcess.mockProcessExit()
     await queueWorkflow(inputs)
@@ -121,6 +124,11 @@ test('queueWorkflow: deployments to queue', async () => {
     while (!(await getLatestQueueStatus()).includes('waiting')) {
     }
 
+    let msg = ''
+    jest.spyOn(core, 'info').mockImplementation((messsage: string) => {
+        msg = messsage
+    })
+
     // @ts-ignore
     jest.spyOn(octokit.rest.repos, 'listDeploymentStatuses').mockImplementation(async (params: any) => {
         if (params.deployment_id == 0) {
@@ -148,7 +156,7 @@ test('queueWorkflow: deployments to queue', async () => {
         }
     })
     while (!(await getLatestQueueStatus()).includes('completed')) {
-    }
+    }    
 })
 
 test('queueWorkflow: timed out', async () => {
@@ -192,11 +200,7 @@ test('queueWorkflow: timed out', async () => {
         }
     })
     let mockExit = mockProcess.mockProcessExit()
-    let msg = ''
-    jest.spyOn(core,'setFailed').mockImplementation((messsage:any)=>{
-        msg = messsage
-    })
+    jest.spyOn(core, 'setFailed').mockImplementation((messsage: any) => {})
     await queueWorkflow(inputs)
-    expect(msg).toContain('timed out')
     expect(mockExit).toHaveBeenCalledWith(1)
 })
